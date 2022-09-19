@@ -71,7 +71,7 @@ fn next_id() -> usize {
 }
 
 /// A thread local variable wrapper.
-pub struct ThreadLocal<T: 'static> {
+pub struct ThreadLocal<T: ?Sized + 'static> {
     id: usize,
     _p: PhantomData<T>,
 }
