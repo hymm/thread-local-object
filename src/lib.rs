@@ -35,7 +35,7 @@
 //! assert_eq!(tls.get_cloned(), Some(1));
 //! ```
 #![warn(missing_docs)]
-#![doc(html_root_url="https://docs.rs/thread-local-object/0.1.0")]
+#![doc(html_root_url = "https://docs.rs/thread-local-object/0.1.0")]
 
 extern crate unsafe_any;
 
@@ -44,7 +44,7 @@ use std::collections::hash_map::{self, HashMap};
 use std::fmt;
 use std::marker::PhantomData;
 use std::mem;
-use std::sync::atomic::{AtomicUsize, ATOMIC_USIZE_INIT, Ordering};
+use std::sync::atomic::{AtomicUsize, Ordering, ATOMIC_USIZE_INIT};
 use unsafe_any::UnsafeAny;
 
 thread_local! {
@@ -123,9 +123,9 @@ impl<T: 'static> ThreadLocal<T> {
     /// value.
     pub fn remove(&self) -> Option<T> {
         VALUES.with(|v| {
-            v.borrow_mut().remove(&self.id).map(|v| unsafe {
-                *v.downcast_unchecked::<T>()
-            })
+            v.borrow_mut()
+                .remove(&self.id)
+                .map(|v| unsafe { *v.downcast_unchecked::<T>() })
         })
     }
 
@@ -167,9 +167,9 @@ impl<T: 'static> ThreadLocal<T> {
     {
         VALUES.with(|v| {
             let v = v.borrow();
-            let value = v.get(&self.id).map(
-                |v| unsafe { v.downcast_ref_unchecked() },
-            );
+            let value = v
+                .get(&self.id)
+                .map(|v| unsafe { v.downcast_ref_unchecked() });
             f(value)
         })
     }
@@ -189,9 +189,9 @@ impl<T: 'static> ThreadLocal<T> {
     {
         VALUES.with(|v| {
             let mut v = v.borrow_mut();
-            let value = v.get_mut(&self.id).map(
-                |v| unsafe { v.downcast_mut_unchecked() },
-            );
+            let value = v
+                .get_mut(&self.id)
+                .map(|v| unsafe { v.downcast_mut_unchecked() });
             f(value)
         })
     }
@@ -209,9 +209,9 @@ where
     /// this value.
     pub fn get_cloned(&self) -> Option<T> {
         VALUES.with(|v| {
-            v.borrow().get(&self.id).map(|v| unsafe {
-                v.downcast_ref_unchecked::<T>().clone()
-            })
+            v.borrow()
+                .get(&self.id)
+                .map(|v| unsafe { v.downcast_ref_unchecked::<T>().clone() })
         })
     }
 }
@@ -251,7 +251,7 @@ impl<'a, T: 'static> Entry<'a, T> {
 /// A view into a thread's slot in a `ThreadLocal` which is occupied.
 pub struct OccupiedEntry<'a, T: 'static>(
     hash_map::OccupiedEntry<'a, usize, Box<UnsafeAny>>,
-    PhantomData<&'a mut T>
+    PhantomData<&'a mut T>,
 );
 
 impl<'a, T: 'static + fmt::Debug> fmt::Debug for OccupiedEntry<'a, T> {
@@ -291,7 +291,7 @@ impl<'a, T: 'static> OccupiedEntry<'a, T> {
 /// A view into a thread's slot in a `ThreadLocal` which is unoccupied.
 pub struct VacantEntry<'a, T: 'static>(
     hash_map::VacantEntry<'a, usize, Box<UnsafeAny>>,
-    PhantomData<&'a mut T>
+    PhantomData<&'a mut T>,
 );
 
 impl<'a, T: 'static + fmt::Debug> fmt::Debug for VacantEntry<'a, T> {
